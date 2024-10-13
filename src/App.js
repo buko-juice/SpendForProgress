@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 const STEPS = {
@@ -70,12 +70,12 @@ function App() {
 
         {step === STEPS.ENTER_AMOUNT && (
           <section>
-            <h2>How much did you spend on the non-essential purchase?</h2>
+            <h2>How much did you spend?</h2>
             <input 
               type="number" 
               value={purchaseAmount} 
               onChange={(e) => setPurchaseAmount(e.target.value)}
-              placeholder="Enter amount"
+              placeholder="Enter amount in $"
             />
             <button onClick={handleAmountSubmit}>Submit</button>
           </section>
@@ -83,9 +83,11 @@ function App() {
 
         {step === STEPS.SHOW_DONATION && (
           <section>
-            <h2>Great! Time to donate to a progressive campaign.</h2>
-            <p>Based on your purchase of ${purchaseAmount}, you should donate at least ${donationAmount.toFixed(2)} to a progressive political campaign.</p>
-            <h3>Here are some campaigns you can donate to:</h3>
+            <h2>Time to donate!</h2>
+            <p>Based on your purchase of ${purchaseAmount}, consider donating at least:</p>
+            <h3>${donationAmount.toFixed(2)}</h3>
+            <p>to a progressive political campaign.</p>
+            <h3>Choose a campaign:</h3>
             <ul>
               {CAMPAIGNS.map((campaign, index) => (
                 <li key={index}>
@@ -95,13 +97,14 @@ function App() {
             </ul>
             <h3>Did you make your donation?</h3>
             <button onClick={() => handleDonationConfirm(true)}>Yes</button>
-            <button onClick={() => handleDonationConfirm(false)}>No</button>
+            <button onClick={() => handleDonationConfirm(false)}>Not yet</button>
           </section>
         )}
 
         {step === STEPS.COMPLETE && (
           <section>
-            <h2>Awesome work! You're Shopping for Progress in 2024. :-)</h2>
+            <h2>Awesome work!</h2>
+            <p>You're Shopping for Progress in 2024. 🎉</p>
             <button onClick={resetProcess}>Start Over</button>
           </section>
         )}
