@@ -1,8 +1,9 @@
 :root {
-  --pastel-red: #FFB3BA;
-  --pastel-white: #FFFFFF;
-  --pastel-blue: #BFDBF7;
-  --dark-blue: #3E7CB1;
+  --dark-blue: #1a3a5a;
+  --medium-blue: #3d6998;
+  --pastel-blue: #a5c0e4;
+  --light-blue: #e6f0ff;
+  --white: #ffffff;
   --text-color: #333333;
 }
 
@@ -10,7 +11,7 @@ body {
   font-family: 'Arial', sans-serif;
   line-height: 1.6;
   color: var(--text-color);
-  background-color: var(--pastel-white);
+  background-color: var(--light-blue);
   margin: 0;
   padding: 0;
 }
@@ -19,18 +20,18 @@ body {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  background-color: var(--pastel-white);
+  background-color: var(--white);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   min-height: 100vh;
 }
 
 .app-header {
-  background-color: var(--pastel-red);
-  color: var(--dark-blue);
+  background-color: var(--dark-blue);
+  color: var(--white);
   text-align: center;
   padding: 1rem;
   margin-bottom: 2rem;
-  border-bottom: 3px solid var(--pastel-blue);
+  border-bottom: 3px solid var(--medium-blue);
 }
 
 h1, h2, h3 {
@@ -51,14 +52,14 @@ input {
   width: calc(100% - 1rem);
   padding: 0.5rem;
   margin-bottom: 1rem;
-  border: 2px solid var(--pastel-red);
+  border: 2px solid var(--medium-blue);
   border-radius: 4px;
   font-size: 1rem;
 }
 
 button {
-  background-color: var(--pastel-red);
-  color: var(--dark-blue);
+  background-color: var(--medium-blue);
+  color: var(--white);
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
@@ -70,7 +71,6 @@ button {
 
 button:hover {
   background-color: var(--dark-blue);
-  color: var(--pastel-white);
 }
 
 ul {
@@ -80,19 +80,19 @@ ul {
 
 li {
   margin-bottom: 0.5rem;
-  background-color: var(--pastel-white);
+  background-color: var(--white);
   padding: 0.5rem;
   border-radius: 4px;
 }
 
 a {
-  color: var(--dark-blue);
+  color: var(--medium-blue);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: var(--pastel-red);
+  color: var(--dark-blue);
   text-decoration: underline;
 }
 
@@ -103,6 +103,7 @@ a:hover {
   margin-bottom: 20px;
   text-align: center;
   font-weight: bold;
+  color: var(--dark-blue);
 }
 
 .totals-summary p {
@@ -112,8 +113,8 @@ a:hover {
 .encouragement-message {
   margin-top: 15px;
   padding: 10px;
-  background-color: var(--pastel-red);
+  background-color: var(--medium-blue);
   border-radius: 5px;
   font-style: italic;
-  color: var(--dark-blue);
+  color: var(--white);
 }
