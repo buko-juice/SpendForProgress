@@ -28,6 +28,7 @@ function App() {
     const saved = localStorage.getItem('totalDonations');
     return saved ? parseFloat(saved) : 0;
   });
+  const [showEncouragement, setShowEncouragement] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('totalPurchases', totalPurchases.toString());
@@ -36,10 +37,12 @@ function App() {
 
   const handleYesPurchase = () => {
     setStep(STEPS.ENTER_AMOUNT);
+    setShowEncouragement(false);
   };
 
   const handleNoPurchase = () => {
     setStep(STEPS.ASK_PURCHASE);
+    setShowEncouragement(false);
   };
 
   const handleAmountSubmit = () => {
@@ -48,6 +51,7 @@ function App() {
       setTotalPurchases(prev => prev + amount);
       setDonationAmount(amount * 0.5);
       setStep(STEPS.SHOW_DONATION);
+      setShowEncouragement(false);
     }
   };
 
@@ -55,8 +59,9 @@ function App() {
     if (confirmed) {
       setTotalDonations(prev => prev + donationAmount);
       setStep(STEPS.COMPLETE);
+      setShowEncouragement(false);
     } else {
-      setStep(STEPS.SHOW_DONATION);
+      setShowEncouragement(true);
     }
   };
 
@@ -64,6 +69,7 @@ function App() {
     setStep(STEPS.ASK_PURCHASE);
     setPurchaseAmount('');
     setDonationAmount(0);
+    setShowEncouragement(false);
   };
 
   return (
@@ -116,6 +122,11 @@ function App() {
             <h3>Did you make your donation?</h3>
             <button onClick={() => handleDonationConfirm(true)}>Yes</button>
             <button onClick={() => handleDonationConfirm(false)}>Not yet</button>
+            {showEncouragement && (
+              <div className="encouragement-message">
+                <p>Every donation, no matter how small, makes a difference! Your support can help create the change we want to see. Why not take a moment to contribute now?</p>
+              </div>
+            )}
           </section>
         )}
 

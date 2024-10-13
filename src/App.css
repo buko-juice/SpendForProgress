@@ -108,3 +108,12 @@ a:hover {
 .totals-summary p {
   margin: 5px 0;
 }
+
+.encouragement-message {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: var(--pastel-red);
+  border-radius: 5px;
+  font-style: italic;
+  color: var(--dark-blue);
+}
