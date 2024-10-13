@@ -10,9 +10,10 @@ const STEPS = {
 };
 
 const CAMPAIGNS = [
-  { name: "Campaign A", url: "https://campaigna.com" },
-  { name: "Campaign B", url: "https://campaignb.com" },
-  { name: "Campaign C", url: "https://campaignc.com" },
+  { name: "Harris-Walz 2024", url: "https://secure.actblue.com/donate/joe-biden-3" },
+  { name: "Fair Fight", url: "https://secure.actblue.com/donate/ff-web" },
+  { name: "Working Families Party", url: "https://secure.actblue.com/donate/wfppac_general?refcode=NatWebsite-button" },
+  { name: "Common Defense", url: "https://commondefense.us/donate" },
 ];
 
 function App() {
