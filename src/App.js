@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
 function App() {
-  const [purchases, setPurchases] = useState([]);
-  const [donationGoal, setDonationGoal] = useState(0);
-  const [selectedCause, setSelectedCause] = useState('');
+  const [purchases, setPurchases] = useState(() => {
+    const savedPurchases = localStorage.getItem('purchases');
+    return savedPurchases ? JSON.parse(savedPurchases) : [];
+  });
+  const [donationGoal, setDonationGoal] = useState(() => {
+    const savedGoal = localStorage.getItem('donationGoal');
+    return savedGoal ? parseFloat(savedGoal) : 0;
+  });
+  const [selectedCause, setSelectedCause] = useState(() => {
+    return localStorage.getItem('selectedCause') || '';
+  });
   const [newPurchase, setNewPurchase] = useState({ description: '', amount: '' });
 
   const causes = ['Education', 'Healthcare', 'Environment', 'Social Justice'];
+
+  useEffect(() => {
+    localStorage.setItem('purchases', JSON.stringify(purchases));
+  }, [purchases]);
+
+  useEffect(() => {
+    localStorage.setItem('donationGoal', donationGoal.toString());
+  }, [donationGoal]);
+
+  useEffect(() => {
+    localStorage.setItem('selectedCause', selectedCause);
+  }, [selectedCause]);
 
   const addPurchase = () => {
     if (newPurchase.description && newPurchase.amount) {
