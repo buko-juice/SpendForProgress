@@ -150,3 +150,7 @@ a:hover {
 .clear-data-btn:hover {
   background-color: var(--dark-blue);
 }
+
+.purchase-question {
+  margin-bottom: 20px;
+}

@@ -72,15 +72,15 @@ function App() {
     setShowEncouragement(false);
   };
 
-const clearAllData = () => {
-  if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
-    localStorage.removeItem('totalPurchases');
-    localStorage.removeItem('totalDonations');
-    setTotalPurchases(0);
-    setTotalDonations(0);
-    alert("All data has been cleared.");
-  }
-};
+  const clearAllData = () => {
+    if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
+      localStorage.removeItem('totalPurchases');
+      localStorage.removeItem('totalDonations');
+      setTotalPurchases(0);
+      setTotalDonations(0);
+      alert("All data has been cleared.");
+    }
+  };
 
   return (
     <div className="app-container">
@@ -94,26 +94,18 @@ const clearAllData = () => {
           <p>Total Donations: ${totalDonations.toFixed(2)}</p>
         </div>
 
-<main>
-  <div className="privacy-disclaimer">
-    <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
-    <button onClick={clearAllData} className="clear-data-btn">Clear My Data</button>
-  </div>
-
-  <div className="totals-summary">
-    {/* ... existing totals-summary content ... */}
-  
-
-  {/* ... rest of your existing code ... */}
-</main>
-
         {step === STEPS.ASK_PURCHASE && (
-          <section>
+          <section className="purchase-question">
             <h2>Did you make a non-essential purchase just now?</h2>
             <button onClick={handleYesPurchase}>Yes</button>
             <button onClick={handleNoPurchase}>No</button>
           </section>
         )}
+
+        <div className="privacy-disclaimer">
+          <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
+          <button onClick={clearAllData} className="clear-data-btn">Clear My Data</button>
+        </div>
 
         {step === STEPS.ENTER_AMOUNT && (
           <section>
@@ -166,4 +158,3 @@ const clearAllData = () => {
 }
 
 export default App;
-
