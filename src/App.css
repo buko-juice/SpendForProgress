@@ -27,11 +27,16 @@ body {
 
 .app-header {
   background-color: var(--dark-blue);
-  color: var(--white);
+  color: var(--white);  /* This ensures the text is white */
   text-align: center;
   padding: 1rem;
   margin-bottom: 2rem;
   border-bottom: 3px solid var(--medium-blue);
+}
+
+.app-header h1 {
+  color: var(--white);  /* This specifically targets the h1 in the header */
+  margin: 0;  /* Remove default margin */
 }
 
 h1, h2, h3 {
