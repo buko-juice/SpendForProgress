@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const STEPS = {
@@ -20,6 +20,19 @@ function App() {
   const [step, setStep] = useState(STEPS.ASK_PURCHASE);
   const [purchaseAmount, setPurchaseAmount] = useState('');
   const [donationAmount, setDonationAmount] = useState(0);
+  const [totalPurchases, setTotalPurchases] = useState(() => {
+    const saved = localStorage.getItem('totalPurchases');
+    return saved ? parseFloat(saved) : 0;
+  });
+  const [totalDonations, setTotalDonations] = useState(() => {
+    const saved = localStorage.getItem('totalDonations');
+    return saved ? parseFloat(saved) : 0;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('totalPurchases', totalPurchases.toString());
+    localStorage.setItem('totalDonations', totalDonations.toString());
+  }, [totalPurchases, totalDonations]);
 
   const handleYesPurchase = () => {
     setStep(STEPS.ENTER_AMOUNT);
@@ -27,12 +40,12 @@ function App() {
 
   const handleNoPurchase = () => {
     setStep(STEPS.ASK_PURCHASE);
-    // Optionally, you could add a message here
   };
 
   const handleAmountSubmit = () => {
     const amount = parseFloat(purchaseAmount);
     if (amount > 0) {
+      setTotalPurchases(prev => prev + amount);
       setDonationAmount(amount * 0.5);
       setStep(STEPS.SHOW_DONATION);
     }
@@ -40,10 +53,10 @@ function App() {
 
   const handleDonationConfirm = (confirmed) => {
     if (confirmed) {
+      setTotalDonations(prev => prev + donationAmount);
       setStep(STEPS.COMPLETE);
     } else {
       setStep(STEPS.SHOW_DONATION);
-      // Optionally, you could add a message encouraging the user to donate
     }
   };
 
@@ -60,6 +73,11 @@ function App() {
       </header>
       
       <main>
+        <div className="totals-summary">
+          <p>Total Purchases: ${totalPurchases.toFixed(2)}</p>
+          <p>Total Donations: ${totalDonations.toFixed(2)}</p>
+        </div>
+
         {step === STEPS.ASK_PURCHASE && (
           <section>
             <h2>Did you make a non-essential purchase just now?</h2>
