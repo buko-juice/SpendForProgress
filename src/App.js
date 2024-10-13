@@ -1,113 +1,110 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
+
+const STEPS = {
+  ASK_PURCHASE: 0,
+  ENTER_AMOUNT: 1,
+  SHOW_DONATION: 2,
+  CONFIRM_DONATION: 3,
+  COMPLETE: 4
+};
+
+const CAMPAIGNS = [
+  { name: "Campaign A", url: "https://campaigna.com" },
+  { name: "Campaign B", url: "https://campaignb.com" },
+  { name: "Campaign C", url: "https://campaignc.com" },
+];
 
 function App() {
-  const [purchases, setPurchases] = useState(() => {
-    const savedPurchases = localStorage.getItem('purchases');
-    return savedPurchases ? JSON.parse(savedPurchases) : [];
-  });
-  const [donationGoal, setDonationGoal] = useState(() => {
-    const savedGoal = localStorage.getItem('donationGoal');
-    return savedGoal ? parseFloat(savedGoal) : 0;
-  });
-  const [selectedCause, setSelectedCause] = useState(() => {
-    return localStorage.getItem('selectedCause') || '';
-  });
-  const [newPurchase, setNewPurchase] = useState({ description: '', amount: '' });
+  const [step, setStep] = useState(STEPS.ASK_PURCHASE);
+  const [purchaseAmount, setPurchaseAmount] = useState('');
+  const [donationAmount, setDonationAmount] = useState(0);
 
-  const causes = ['Education', 'Healthcare', 'Environment', 'Social Justice'];
+  const handleYesPurchase = () => {
+    setStep(STEPS.ENTER_AMOUNT);
+  };
 
-  useEffect(() => {
-    localStorage.setItem('purchases', JSON.stringify(purchases));
-  }, [purchases]);
+  const handleNoPurchase = () => {
+    setStep(STEPS.ASK_PURCHASE);
+    // Optionally, you could add a message here
+  };
 
-  useEffect(() => {
-    localStorage.setItem('donationGoal', donationGoal.toString());
-  }, [donationGoal]);
-
-  useEffect(() => {
-    localStorage.setItem('selectedCause', selectedCause);
-  }, [selectedCause]);
-
-  const addPurchase = () => {
-    if (newPurchase.description && newPurchase.amount) {
-      setPurchases([...purchases, { ...newPurchase, amount: parseFloat(newPurchase.amount) }]);
-      setNewPurchase({ description: '', amount: '' });
+  const handleAmountSubmit = () => {
+    const amount = parseFloat(purchaseAmount);
+    if (amount > 0) {
+      setDonationAmount(amount * 0.5);
+      setStep(STEPS.SHOW_DONATION);
     }
   };
 
-  const totalPurchases = purchases.reduce((sum, purchase) => sum + purchase.amount, 0);
-  const totalDonations = totalPurchases * 0.5;
-  const progressPercentage = donationGoal > 0 ? (totalDonations / donationGoal) * 100 : 0;
+  const handleDonationConfirm = (confirmed) => {
+    if (confirmed) {
+      setStep(STEPS.COMPLETE);
+    } else {
+      setStep(STEPS.SHOW_DONATION);
+      // Optionally, you could add a message encouraging the user to donate
+    }
+  };
+
+  const resetProcess = () => {
+    setStep(STEPS.ASK_PURCHASE);
+    setPurchaseAmount('');
+    setDonationAmount(0);
+  };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h1 style={{ color: '#4a4a4a' }}>Spend For Progress</h1>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>Shop for Progress 2024</h1>
+      </header>
       
-      <div>
-        <h2>Set Donation Goal</h2>
-        <input 
-          type="number" 
-          value={donationGoal} 
-          onChange={(e) => setDonationGoal(parseFloat(e.target.value) || 0)}
-          placeholder="Enter your donation goal"
-        />
-      </div>
+      <main>
+        {step === STEPS.ASK_PURCHASE && (
+          <section>
+            <h2>Did you make a non-essential purchase just now?</h2>
+            <button onClick={handleYesPurchase}>Yes</button>
+            <button onClick={handleNoPurchase}>No</button>
+          </section>
+        )}
 
-      <div>
-        <h2>Select Cause</h2>
-        <select value={selectedCause} onChange={(e) => setSelectedCause(e.target.value)}>
-          <option value="">Select a cause</option>
-          {causes.map(cause => (
-            <option key={cause} value={cause}>{cause}</option>
-          ))}
-        </select>
-      </div>
+        {step === STEPS.ENTER_AMOUNT && (
+          <section>
+            <h2>How much did you spend on the non-essential purchase?</h2>
+            <input 
+              type="number" 
+              value={purchaseAmount} 
+              onChange={(e) => setPurchaseAmount(e.target.value)}
+              placeholder="Enter amount"
+            />
+            <button onClick={handleAmountSubmit}>Submit</button>
+          </section>
+        )}
 
-      <div>
-        <h2>Add Purchase</h2>
-        <input 
-          type="text" 
-          value={newPurchase.description} 
-          onChange={(e) => setNewPurchase({...newPurchase, description: e.target.value})}
-          placeholder="Purchase description"
-        />
-        <input 
-          type="number" 
-          value={newPurchase.amount} 
-          onChange={(e) => setNewPurchase({...newPurchase, amount: e.target.value})}
-          placeholder="Amount"
-        />
-        <button onClick={addPurchase}>Add Purchase</button>
-      </div>
+        {step === STEPS.SHOW_DONATION && (
+          <section>
+            <h2>Great! Time to donate to a progressive campaign.</h2>
+            <p>Based on your purchase of ${purchaseAmount}, you should donate at least ${donationAmount.toFixed(2)} to a progressive political campaign.</p>
+            <h3>Here are some campaigns you can donate to:</h3>
+            <ul>
+              {CAMPAIGNS.map((campaign, index) => (
+                <li key={index}>
+                  <a href={campaign.url} target="_blank" rel="noopener noreferrer">{campaign.name}</a>
+                </li>
+              ))}
+            </ul>
+            <h3>Did you make your donation?</h3>
+            <button onClick={() => handleDonationConfirm(true)}>Yes</button>
+            <button onClick={() => handleDonationConfirm(false)}>No</button>
+          </section>
+        )}
 
-      <div>
-        <h2>Purchases</h2>
-        <ul>
-          {purchases.map((purchase, index) => (
-            <li key={index}>{purchase.description}: ${purchase.amount.toFixed(2)}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <h2>Summary</h2>
-        <p>Total Purchases: ${totalPurchases.toFixed(2)}</p>
-        <p>Total Donations: ${totalDonations.toFixed(2)}</p>
-        <p>Selected Cause: {selectedCause || 'None selected'}</p>
-        <p>Progress towards goal: {progressPercentage.toFixed(2)}%</p>
-        <div style={{ 
-          width: '100%', 
-          backgroundColor: '#e0e0e0', 
-          borderRadius: '5px',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            width: `${Math.min(progressPercentage, 100)}%`,
-            backgroundColor: '#4CAF50',
-            height: '20px'
-          }}></div>
-        </div>
-      </div>
+        {step === STEPS.COMPLETE && (
+          <section>
+            <h2>Awesome work! You're Shopping for Progress in 2024. :-)</h2>
+            <button onClick={resetProcess}>Start Over</button>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
