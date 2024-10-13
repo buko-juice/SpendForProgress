@@ -27,7 +27,7 @@ body {
 
 .app-header {
   background-color: var(--dark-blue);
-  color: var(--white);  /* This ensures the text is white */
+  color: var(--white);
   text-align: center;
   padding: 1rem;
   margin-bottom: 2rem;
@@ -35,8 +35,8 @@ body {
 }
 
 .app-header h1 {
-  color: var(--white);  /* This specifically targets the h1 in the header */
-  margin: 0;  /* Remove default margin */
+  color: var(--white);
+  margin: 0;
 }
 
 h1, h2, h3 {
@@ -123,8 +123,6 @@ a:hover {
   font-style: italic;
   color: var(--white);
 }
-
-/* Add these new styles to your existing App.css file */
 
 .privacy-disclaimer {
   background-color: var(--light-blue);

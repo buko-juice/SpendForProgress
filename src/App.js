@@ -102,7 +102,7 @@ const clearAllData = () => {
 
   <div className="totals-summary">
     {/* ... existing totals-summary content ... */}
-  </div>
+  
 
   {/* ... rest of your existing code ... */}
 </main>
