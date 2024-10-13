@@ -72,6 +72,16 @@ function App() {
     setShowEncouragement(false);
   };
 
+const clearAllData = () => {
+  if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
+    localStorage.removeItem('totalPurchases');
+    localStorage.removeItem('totalDonations');
+    setTotalPurchases(0);
+    setTotalDonations(0);
+    alert("All data has been cleared.");
+  }
+};
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -83,6 +93,19 @@ function App() {
           <p>Total Purchases: ${totalPurchases.toFixed(2)}</p>
           <p>Total Donations: ${totalDonations.toFixed(2)}</p>
         </div>
+
+<main>
+  <div className="privacy-disclaimer">
+    <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
+    <button onClick={clearAllData} className="clear-data-btn">Clear My Data</button>
+  </div>
+
+  <div className="totals-summary">
+    {/* ... existing totals-summary content ... */}
+  </div>
+
+  {/* ... rest of your existing code ... */}
+</main>
 
         {step === STEPS.ASK_PURCHASE && (
           <section>
@@ -143,3 +166,4 @@ function App() {
 }
 
 export default App;
+
