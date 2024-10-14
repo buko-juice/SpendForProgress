@@ -88,3 +88,54 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* New styles for the manual donation section */
+.manual-donation {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #e6f7ff;
+  border-radius: 5px;
+}
+
+.manual-donation input {
+  margin-right: 10px;
+}
+
+.manual-donation button {
+  background-color: #1e3a8a; /* Match the header color for consistency */
+}
+
+/* Additional styles to improve layout and readability */
+section {
+  margin-bottom: 30px;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .App-header {
+    flex-direction: column;
+  }
+
+  .App-logo {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  input[type="number"], button {
+    width: 100%;
+  }
+}
