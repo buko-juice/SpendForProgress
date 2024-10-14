@@ -154,3 +154,16 @@ a:hover {
 .purchase-question {
   margin-bottom: 20px;
 }
+
+.App-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #1e3a8a; /* Dark blue background */
+}
+
+.App-logo {
+  height: 60px; /* Adjust this value to resize your logo */
+  margin-right: 20px;
+}

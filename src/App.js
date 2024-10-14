@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { debounce } from 'lodash';
 import './App.css';
+import logo from './logo.png';
 
 const STEPS = {
   ASK_PURCHASE: 0,
@@ -72,17 +74,35 @@ function App() {
     setShowEncouragement(false);
   };
 
-  const clearAllData = () => {
-    if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
+ const clearAllData = () => {
+  if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
+    // Use requestIdleCallback to run this when the browser is idle
+    requestIdleCallback(() => {
       localStorage.removeItem('totalPurchases');
       localStorage.removeItem('totalDonations');
-      setTotalPurchases(0);
-      setTotalDonations(0);
-      alert("All data has been cleared.");
-    }
-  };
+      
+      // Use requestAnimationFrame to schedule state updates
+      requestAnimationFrame(() => {
+        setTotalPurchases(0);
+        setTotalDonations(0);
+        
+        // Use a timeout to show the alert after the UI has updated
+        setTimeout(() => {
+          alert("All data has been cleared.");
+        }, 0);
+      });
+    });
+  }
+};
+
+const debouncedClearAllData = debounce(clearAllData, 300);
 
   return (
+  <div className="App">
+    <header className="App-header">
+      <img src={logo} alt="Shop for Progress 2024 Logo" className="App-logo" />
+      <h1>Shop for Progress 2024</h1>
+    </header>
     <div className="app-container">
       <header className="app-header">
         <h1>Shop for Progress 2024</h1>
@@ -104,7 +124,7 @@ function App() {
 
         <div className="privacy-disclaimer">
           <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
-          <button onClick={clearAllData} className="clear-data-btn">Clear My Data</button>
+          <button onClick={debouncedClearAllData} className="clear-data-btn">Clear My Data</button>
         </div>
 
         {step === STEPS.ENTER_AMOUNT && (
