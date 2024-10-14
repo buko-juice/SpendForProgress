@@ -1,55 +1,33 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  font-family: Arial, sans-serif;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: #1e3a8a; /* Dark blue background */
+  padding: 20px;
+  color: white;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-/* This rule ensures the header title is white */
+.App-logo {
+  height: 60px; /* Adjust this value to match your desired logo size */
+  margin-right: 20px;
+}
+
 .App-header h1 {
   color: white;
+  margin: 0;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Styles for the app container */
 .app-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* Styles for the totals summary */
 .totals-summary {
   background-color: #f0f0f0;
   padding: 10px;
@@ -57,17 +35,15 @@
   margin-bottom: 20px;
 }
 
-/* Styles for the purchase question section */
 .purchase-question {
   margin-bottom: 20px;
 }
 
-/* Styles for buttons */
 button {
   background-color: #4CAF50;
   border: none;
   color: white;
-  padding: 15px 32px;
+  padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -77,29 +53,25 @@ button {
   border-radius: 5px;
 }
 
-/* Styles for input fields */
 input[type="number"] {
   width: 100%;
-  padding: 12px 20px;
+  padding: 10px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-/* Styles for the privacy disclaimer */
 .privacy-disclaimer {
   font-size: 0.8em;
   color: #666;
   margin-top: 20px;
 }
 
-/* Styles for the clear data button */
 .clear-data-btn {
   background-color: #f44336;
 }
 
-/* Styles for the encouragement message */
 .encouragement-message {
   background-color: #fffae6;
   border: 1px solid #ffd700;
@@ -108,7 +80,6 @@ input[type="number"] {
   margin-top: 20px;
 }
 
-/* Styles for links */
 a {
   color: #0066cc;
   text-decoration: none;
