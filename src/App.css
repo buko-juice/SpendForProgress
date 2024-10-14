@@ -89,12 +89,19 @@ a:hover {
   text-decoration: underline;
 }
 
-/* New styles for the manual donation section */
 .manual-donation {
+  margin-top: 30px;
   margin-bottom: 20px;
   padding: 15px;
   background-color: #e6f7ff;
   border-radius: 5px;
+}
+
+.manual-donation-explanation {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 15px;
+  text-align: left;
 }
 
 .manual-donation input {
@@ -105,7 +112,6 @@ a:hover {
   background-color: #1e3a8a; /* Match the header color for consistency */
 }
 
-/* Additional styles to improve layout and readability */
 section {
   margin-bottom: 30px;
 }
