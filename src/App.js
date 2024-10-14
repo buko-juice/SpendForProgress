@@ -31,6 +31,7 @@ function App() {
     return saved ? parseFloat(saved) : 0;
   });
   const [showEncouragement, setShowEncouragement] = useState(false);
+  const [manualDonationAmount, setManualDonationAmount] = useState('');
 
   useEffect(() => {
     localStorage.setItem('totalPurchases', totalPurchases.toString());
@@ -74,6 +75,17 @@ function App() {
     setShowEncouragement(false);
   };
 
+  const handleManualDonationSubmit = () => {
+    const amount = parseFloat(manualDonationAmount);
+    if (amount > 0) {
+      setTotalDonations(prev => prev + amount);
+      setManualDonationAmount('');
+      alert(`Successfully added $${amount.toFixed(2)} to total donations.`);
+    } else {
+      alert('Please enter a valid donation amount.');
+    }
+  };
+
   const clearAllData = () => {
     if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
       requestIdleCallback(() => {
@@ -106,6 +118,17 @@ function App() {
             <p>Total Purchases: ${totalPurchases.toFixed(2)}</p>
             <p>Total Donations: ${totalDonations.toFixed(2)}</p>
           </div>
+
+          <section className="manual-donation">
+            <h2>Add Manual Donation</h2>
+            <input 
+              type="number" 
+              value={manualDonationAmount} 
+              onChange={(e) => setManualDonationAmount(e.target.value)}
+              placeholder="Enter donation amount"
+            />
+            <button onClick={handleManualDonationSubmit}>Add Donation</button>
+          </section>
 
           {step === STEPS.ASK_PURCHASE && (
             <section className="purchase-question">
