@@ -119,17 +119,6 @@ function App() {
             <p>Total Donations: ${totalDonations.toFixed(2)}</p>
           </div>
 
-          <section className="manual-donation">
-            <h2>Add Manual Donation</h2>
-            <input 
-              type="number" 
-              value={manualDonationAmount} 
-              onChange={(e) => setManualDonationAmount(e.target.value)}
-              placeholder="Enter donation amount"
-            />
-            <button onClick={handleManualDonationSubmit}>Add Donation</button>
-          </section>
-
           {step === STEPS.ASK_PURCHASE && (
             <section className="purchase-question">
               <h2>Did you make a non-essential purchase just now?</h2>
@@ -137,11 +126,6 @@ function App() {
               <button onClick={handleNoPurchase}>No</button>
             </section>
           )}
-
-          <div className="privacy-disclaimer">
-            <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
-            <button onClick={debouncedClearAllData} className="clear-data-btn">Clear My Data</button>
-          </div>
 
           {step === STEPS.ENTER_AMOUNT && (
             <section>
@@ -188,6 +172,26 @@ function App() {
               <button onClick={resetProcess}>Start Over</button>
             </section>
           )}
+
+          <section className="manual-donation">
+            <h2>Add Manual Donation</h2>
+            <p className="manual-donation-explanation">
+              Use this section to add donations you've made outside of this app. 
+              This helps keep your total donations accurate if you've contributed directly to campaigns.
+            </p>
+            <input 
+              type="number" 
+              value={manualDonationAmount} 
+              onChange={(e) => setManualDonationAmount(e.target.value)}
+              placeholder="Enter donation amount"
+            />
+            <button onClick={handleManualDonationSubmit}>Add Donation</button>
+          </section>
+
+          <div className="privacy-disclaimer">
+            <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
+            <button onClick={debouncedClearAllData} className="clear-data-btn">Clear My Data</button>
+          </div>
         </main>
       </div>
     </div>
