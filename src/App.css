@@ -4,7 +4,7 @@
 }
 
 .App-header {
-  background-color: #1e3a8a; /* Dark blue background */
+  background-color: #1e3a8a;
   padding: 20px;
   color: white;
   display: flex;
@@ -13,7 +13,7 @@
 }
 
 .App-logo {
-  height: 60px; /* Adjust this value to match your desired logo size */
+  height: 60px;
   margin-right: 20px;
 }
 
@@ -89,7 +89,7 @@ a:hover {
   text-decoration: underline;
 }
 
-.manual-donation {
+.manual-entry {
   margin-top: 30px;
   margin-bottom: 20px;
   padding: 15px;
@@ -97,51 +97,27 @@ a:hover {
   border-radius: 5px;
 }
 
-.manual-donation-explanation {
+.manual-purchase, .manual-donation {
+  margin-bottom: 20px;
+}
+
+.manual-entry-explanation {
   font-size: 0.9em;
   color: #555;
   margin-bottom: 15px;
   text-align: left;
 }
 
-.manual-donation input {
+.manual-entry input {
   margin-right: 10px;
 }
 
-.manual-donation button {
-  background-color: #1e3a8a; /* Match the header color for consistency */
+.manual-entry button {
+  background-color: #1e3a8a;
 }
 
-section {
-  margin-bottom: 30px;
-}
-
-h2 {
-  color: #333;
-  margin-bottom: 15px;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 10px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .App-header {
-    flex-direction: column;
-  }
-
-  .App-logo {
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-
-  input[type="number"], button {
-    width: 100%;
-  }
-}
+.history {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;

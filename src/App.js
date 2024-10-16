@@ -32,11 +32,23 @@ function App() {
   });
   const [showEncouragement, setShowEncouragement] = useState(false);
   const [manualDonationAmount, setManualDonationAmount] = useState('');
+  const [manualPurchaseAmount, setManualPurchaseAmount] = useState('');
+  const [donationHistory, setDonationHistory] = useState(() => {
+    const saved = localStorage.getItem('donationHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [purchaseHistory, setPurchaseHistory] = useState(() => {
+    const saved = localStorage.getItem('purchaseHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('totalPurchases', totalPurchases.toString());
     localStorage.setItem('totalDonations', totalDonations.toString());
-  }, [totalPurchases, totalDonations]);
+    localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+    localStorage.setItem('purchaseHistory', JSON.stringify(purchaseHistory));
+  }, [totalPurchases, totalDonations, donationHistory, purchaseHistory]);
 
   const handleYesPurchase = () => {
     setStep(STEPS.ENTER_AMOUNT);
@@ -52,6 +64,11 @@ function App() {
     const amount = parseFloat(purchaseAmount);
     if (amount > 0) {
       setTotalPurchases(prev => prev + amount);
+      setPurchaseHistory(prev => [...prev, {
+        date: new Date().toISOString(),
+        amount: amount,
+        type: 'Logged'
+      }]);
       setDonationAmount(amount * 0.5);
       setStep(STEPS.SHOW_DONATION);
       setShowEncouragement(false);
@@ -61,6 +78,11 @@ function App() {
   const handleDonationConfirm = (confirmed) => {
     if (confirmed) {
       setTotalDonations(prev => prev + donationAmount);
+      setDonationHistory(prev => [...prev, {
+        date: new Date().toISOString(),
+        amount: donationAmount,
+        type: 'Purchase-based'
+      }]);
       setStep(STEPS.COMPLETE);
       setShowEncouragement(false);
     } else {
@@ -79,10 +101,31 @@ function App() {
     const amount = parseFloat(manualDonationAmount);
     if (amount > 0) {
       setTotalDonations(prev => prev + amount);
+      setDonationHistory(prev => [...prev, {
+        date: new Date().toISOString(),
+        amount: amount,
+        type: 'Manual'
+      }]);
       setManualDonationAmount('');
       alert(`Successfully added $${amount.toFixed(2)} to total donations.`);
     } else {
       alert('Please enter a valid donation amount.');
+    }
+  };
+
+  const handleManualPurchaseSubmit = () => {
+    const amount = parseFloat(manualPurchaseAmount);
+    if (amount > 0) {
+      setTotalPurchases(prev => prev + amount);
+      setPurchaseHistory(prev => [...prev, {
+        date: new Date().toISOString(),
+        amount: amount,
+        type: 'Manual'
+      }]);
+      setManualPurchaseAmount('');
+      alert(`Successfully added $${amount.toFixed(2)} to total purchases.`);
+    } else {
+      alert('Please enter a valid purchase amount.');
     }
   };
 
@@ -91,10 +134,14 @@ function App() {
       requestIdleCallback(() => {
         localStorage.removeItem('totalPurchases');
         localStorage.removeItem('totalDonations');
+        localStorage.removeItem('donationHistory');
+        localStorage.removeItem('purchaseHistory');
         
         requestAnimationFrame(() => {
           setTotalPurchases(0);
           setTotalDonations(0);
+          setDonationHistory([]);
+          setPurchaseHistory([]);
           
           setTimeout(() => {
             alert("All data has been cleared.");
@@ -105,6 +152,10 @@ function App() {
   };
 
   const debouncedClearAllData = debounce(clearAllData, 300);
+
+  const toggleHistory = () => {
+    setShowHistory(!showHistory);
+  };
 
   return (
     <div className="App">
@@ -117,7 +168,39 @@ function App() {
           <div className="totals-summary">
             <p>Total Purchases: ${totalPurchases.toFixed(2)}</p>
             <p>Total Donations: ${totalDonations.toFixed(2)}</p>
+            <button onClick={toggleHistory}>
+              {showHistory ? 'Hide History' : 'View History'}
+            </button>
           </div>
+
+          {showHistory && (
+            <section className="history">
+              <h2>Purchase History</h2>
+              {purchaseHistory.length === 0 ? (
+                <p>No purchases recorded yet.</p>
+              ) : (
+                <ul>
+                  {purchaseHistory.map((purchase, index) => (
+                    <li key={index}>
+                      {new Date(purchase.date).toLocaleDateString()}: ${purchase.amount.toFixed(2)} ({purchase.type})
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <h2>Donation History</h2>
+              {donationHistory.length === 0 ? (
+                <p>No donations recorded yet.</p>
+              ) : (
+                <ul>
+                  {donationHistory.map((donation, index) => (
+                    <li key={index}>
+                      {new Date(donation.date).toLocaleDateString()}: ${donation.amount.toFixed(2)} ({donation.type})
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
 
           {step === STEPS.ASK_PURCHASE && (
             <section className="purchase-question">
@@ -173,19 +256,34 @@ function App() {
             </section>
           )}
 
-          <section className="manual-donation">
-            <h2>Add Manual Donation</h2>
-            <p className="manual-donation-explanation">
-              Use this section to add donations you've made outside of this app. 
-              This helps keep your total donations accurate if you've contributed directly to campaigns.
-            </p>
-            <input 
-              type="number" 
-              value={manualDonationAmount} 
-              onChange={(e) => setManualDonationAmount(e.target.value)}
-              placeholder="Enter donation amount"
-            />
-            <button onClick={handleManualDonationSubmit}>Add Donation</button>
+          <section className="manual-entry">
+            <h2>Manual Entries</h2>
+            <div className="manual-purchase">
+              <h3>Add Manual Purchase</h3>
+              <p className="manual-entry-explanation">
+                Use this to add purchases you forgot to log through the app.
+              </p>
+              <input 
+                type="number" 
+                value={manualPurchaseAmount} 
+                onChange={(e) => setManualPurchaseAmount(e.target.value)}
+                placeholder="Enter purchase amount"
+              />
+              <button onClick={handleManualPurchaseSubmit}>Add Purchase</button>
+            </div>
+            <div className="manual-donation">
+              <h3>Add Manual Donation</h3>
+              <p className="manual-entry-explanation">
+                Use this to add donations you've made outside of this app.
+              </p>
+              <input 
+                type="number" 
+                value={manualDonationAmount} 
+                onChange={(e) => setManualDonationAmount(e.target.value)}
+                placeholder="Enter donation amount"
+              />
+              <button onClick={handleManualDonationSubmit}>Add Donation</button>
+            </div>
           </section>
 
           <div className="privacy-disclaimer">
