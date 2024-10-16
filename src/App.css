@@ -121,3 +121,55 @@ a:hover {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.history h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.history ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.history li {
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .App-header {
+    flex-direction: column;
+  }
+
+  .App-logo {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  input[type="number"], button {
+    width: 100%;
+  }
+}
