@@ -1,303 +1,273 @@
 import React, { useState, useEffect } from 'react';
-import { debounce } from 'lodash';
+import DonationProgressTracker from './DonationProgressTracker';
 import './App.css';
-import logo from './logo.svg';
 
 const STEPS = {
-  ASK_PURCHASE: 0,
-  ENTER_AMOUNT: 1,
-  SHOW_SAVINGS: 2,
-  CONFIRM_SAVINGS: 3,
-  COMPLETE: 4
+  ASK_PURCHASE: 'ASK_PURCHASE',
+  ENTER_AMOUNT: 'ENTER_AMOUNT',
+  SHOW_DONATION: 'SHOW_DONATION',
+  CONFIRM_DONATION: 'CONFIRM_DONATION',
+  COMPLETE: 'COMPLETE'
 };
 
-const PURCHASE_TYPES = {
-  FRIVOLOUS: 'Frivolous',
-  NON_FRIVOLOUS: 'Non-Frivolous'
-};
+const CAMPAIGNS = [
+  'Harris-Walz 2024',
+  'Fair Fight',
+  'Working Families Party',
+  'Common Defense'
+];
 
 function App() {
+  // State management
   const [step, setStep] = useState(STEPS.ASK_PURCHASE);
   const [purchaseAmount, setPurchaseAmount] = useState('');
-  const [savingsAmount, setSavingsAmount] = useState(0);
-  const [totalSpending, setTotalSpending] = useState(() => {
-    const saved = localStorage.getItem('totalSpending');
+  const [donationAmount, setDonationAmount] = useState(0);
+  const [selectedCampaign, setSelectedCampaign] = useState('');
+  const [totalPurchases, setTotalPurchases] = useState(() => {
+    const saved = localStorage.getItem('totalPurchases');
     return saved ? parseFloat(saved) : 0;
   });
-  const [frivolousSpending, setFrivolousSpending] = useState(() => {
-    const saved = localStorage.getItem('frivolousSpending');
+  const [totalDonations, setTotalDonations] = useState(() => {
+    const saved = localStorage.getItem('totalDonations');
     return saved ? parseFloat(saved) : 0;
   });
-  const [nonFrivolousSpending, setNonFrivolousSpending] = useState(() => {
-    const saved = localStorage.getItem('nonFrivolousSpending');
-    return saved ? parseFloat(saved) : 0;
-  });
-  const [totalSavings, setTotalSavings] = useState(() => {
-    const saved = localStorage.getItem('totalSavings');
-    return saved ? parseFloat(saved) : 0;
-  });
-  const [purchaseType, setPurchaseType] = useState('');
-  const [showEncouragement, setShowEncouragement] = useState(false);
-  const [spendingHistory, setSpendingHistory] = useState(() => {
-    const saved = localStorage.getItem('spendingHistory');
+  const [donationHistory, setDonationHistory] = useState(() => {
+    const saved = localStorage.getItem('donationHistory');
     return saved ? JSON.parse(saved) : [];
   });
-  const [showHistory, setShowHistory] = useState(false);
-  const [manualEntryType, setManualEntryType] = useState('');
-  const [manualEntryAmount, setManualEntryAmount] = useState('');
 
-  const calculateSavingsProgress = () => {
-    const targetSavings = frivolousSpending * 0.1;
-    const progressPercentage = totalSavings / targetSavings * 100;
-    return {
-      target: targetSavings,
-      current: totalSavings,
-      percentage: targetSavings > 0 ? Math.min(progressPercentage, 100) : 0,
-      isOnTrack: totalSavings >= targetSavings
-    };
-  };
-
+  // Save to localStorage whenever totals change
   useEffect(() => {
-    localStorage.setItem('totalSpending', totalSpending.toString());
-    localStorage.setItem('frivolousSpending', frivolousSpending.toString());
-    localStorage.setItem('nonFrivolousSpending', nonFrivolousSpending.toString());
-    localStorage.setItem('totalSavings', totalSavings.toString());
-    localStorage.setItem('spendingHistory', JSON.stringify(spendingHistory));
-  }, [totalSpending, frivolousSpending, nonFrivolousSpending, totalSavings, spendingHistory]);
+    localStorage.setItem('totalPurchases', totalPurchases.toString());
+    localStorage.setItem('totalDonations', totalDonations.toString());
+    localStorage.setItem('donationHistory', JSON.stringify(donationHistory));
+  }, [totalPurchases, totalDonations, donationHistory]);
 
-  const handlePurchaseType = (type) => {
-    setPurchaseType(type);
+  const handleYesPurchase = () => {
     setStep(STEPS.ENTER_AMOUNT);
   };
 
-  const handleAmountSubmit = () => {
-    const amount = parseFloat(purchaseAmount);
-    if (amount > 0) {
-      setTotalSpending(prev => prev + amount);
-      if (purchaseType === PURCHASE_TYPES.FRIVOLOUS) {
-        setFrivolousSpending(prev => prev + amount);
-        setSavingsAmount(amount * 0.1);
-        setStep(STEPS.SHOW_SAVINGS);
-      } else {
-        setNonFrivolousSpending(prev => prev + amount);
-        addToSpendingHistory(amount, PURCHASE_TYPES.NON_FRIVOLOUS, 0);
-        setStep(STEPS.COMPLETE);
-      }
-      setShowEncouragement(false);
-    }
-  };
-
-  const handleSavingsConfirm = (confirmed) => {
-    if (confirmed) {
-      setTotalSavings(prev => prev + savingsAmount);
-      addToSpendingHistory(parseFloat(purchaseAmount), PURCHASE_TYPES.FRIVOLOUS, savingsAmount);
-      setStep(STEPS.COMPLETE);
-      setShowEncouragement(false);
-    } else {
-      setShowEncouragement(true);
-    }
-  };
-
-  const addToSpendingHistory = (amount, type, savings) => {
-    setSpendingHistory(prev => [...prev, {
-      date: new Date().toISOString(),
-      amount: amount,
-      type: type,
-      savings: savings
-    }]);
-  };
-
-  const resetProcess = () => {
+  const handleNoPurchase = () => {
     setStep(STEPS.ASK_PURCHASE);
     setPurchaseAmount('');
-    setSavingsAmount(0);
-    setPurchaseType('');
-    setShowEncouragement(false);
   };
 
-  const handleManualEntry = () => {
-    const amount = parseFloat(manualEntryAmount);
+  const handleAmountSubmit = (e) => {
+    e.preventDefault();
+    const amount = parseFloat(purchaseAmount);
     if (amount > 0) {
-      switch (manualEntryType) {
-        case PURCHASE_TYPES.FRIVOLOUS:
-          setTotalSpending(prev => prev + amount);
-          setFrivolousSpending(prev => prev + amount);
-          addToSpendingHistory(amount, PURCHASE_TYPES.FRIVOLOUS, 0);
-          break;
-        case PURCHASE_TYPES.NON_FRIVOLOUS:
-          setTotalSpending(prev => prev + amount);
-          setNonFrivolousSpending(prev => prev + amount);
-          addToSpendingHistory(amount, PURCHASE_TYPES.NON_FRIVOLOUS, 0);
-          break;
-        case 'Savings':
-          setTotalSavings(prev => prev + amount);
-          addToSpendingHistory(amount, 'Manual Savings', amount);
-          break;
-        default:
-          break;
-      }
-      setManualEntryAmount('');
-      alert(`Successfully added $${amount.toFixed(2)} to ${manualEntryType}.`);
-    } else {
-      alert('Please enter a valid amount.');
+      setTotalPurchases(prev => prev + amount);
+      setDonationAmount(amount * 0.5);
+      setStep(STEPS.SHOW_DONATION);
+    }
+  };
+
+  const handleDonationConfirm = () => {
+    if (selectedCampaign) {
+      setTotalDonations(prev => prev + donationAmount);
+      setDonationHistory(prev => [...prev, {
+        date: new Date().toISOString(),
+        amount: donationAmount,
+        campaign: selectedCampaign
+      }]);
+      setStep(STEPS.COMPLETE);
+    }
+  };
+
+  const handleManualDonationSubmit = (e) => {
+    e.preventDefault();
+    const amount = parseFloat(e.target.amount.value);
+    const campaign = e.target.campaign.value;
+    if (amount > 0 && campaign) {
+      setTotalDonations(prev => prev + amount);
+      setDonationHistory(prev => [...prev, {
+        date: new Date().toISOString(),
+        amount: amount,
+        campaign: campaign
+      }]);
+      e.target.reset();
     }
   };
 
   const clearAllData = () => {
-    if (window.confirm("Are you sure you want to clear all your data? This action cannot be undone.")) {
-      requestIdleCallback(() => {
-        localStorage.removeItem('totalSpending');
-        localStorage.removeItem('frivolousSpending');
-        localStorage.removeItem('nonFrivolousSpending');
-        localStorage.removeItem('totalSavings');
-        localStorage.removeItem('spendingHistory');
-        
-        requestAnimationFrame(() => {
-          setTotalSpending(0);
-          setFrivolousSpending(0);
-          setNonFrivolousSpending(0);
-          setTotalSavings(0);
-          setSpendingHistory([]);
-          
-          setTimeout(() => {
-            alert("All data has been cleared.");
-          }, 0);
-        });
-      });
+    if (window.confirm('Are you sure you want to clear all data?')) {
+      setTotalPurchases(0);
+      setTotalDonations(0);
+      setDonationHistory([]);
+      setPurchaseAmount('');
+      setDonationAmount(0);
+      setSelectedCampaign('');
+      setStep(STEPS.ASK_PURCHASE);
+      localStorage.clear();
     }
   };
 
-  const debouncedClearAllData = debounce(clearAllData, 300);
-
-  const toggleHistory = () => {
-    setShowHistory(!showHistory);
+  const resetStep = () => {
+    setStep(STEPS.ASK_PURCHASE);
+    setPurchaseAmount('');
+    setDonationAmount(0);
+    setSelectedCampaign('');
   };
 
-  const savingsProgress = calculateSavingsProgress();
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} alt="Spend to Save Logo" className="App-logo" />
-        <h1>Spend to Save</h1>
-      </header>
-      <div className="app-container">
-        <main>
-          <div className="totals-summary">
-            <p>Total Spending: ${totalSpending.toFixed(2)}</p>
-            <p>Frivolous Spending: ${frivolousSpending.toFixed(2)}</p>
-            <p>Non-Frivolous Spending: ${nonFrivolousSpending.toFixed(2)}</p>
-            <p>Total Savings: ${totalSavings.toFixed(2)}</p>
-            <div className="savings-target">
-              <h3>Savings Target Progress</h3>
-              <p>Target (10% of Frivolous Spending): ${savingsProgress.target.toFixed(2)}</p>
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${savingsProgress.percentage}%` }}
-                ></div>
-              </div>
-              <p className={savingsProgress.isOnTrack ? 'status-on-track' : 'status-behind'}>
-                {savingsProgress.isOnTrack 
-                  ? "🎉 You're meeting your savings target!" 
-                  : `📊 You're $${(savingsProgress.target - savingsProgress.current).toFixed(2)} behind your target`
-                }
-              </p>
+    <div className="container mx-auto p-4 max-w-2xl">
+      <h1 className="text-3xl font-bold text-blue-900 mb-6">Shop for Progress 2024</h1>
+      
+      {/* Donation Progress Tracker */}
+      <DonationProgressTracker />
+
+      <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+        {step === STEPS.ASK_PURCHASE && (
+          <div>
+            <h2 className="text-xl mb-4">Did you make a non-essential purchase today?</h2>
+            <div className="space-x-4">
+              <button
+                onClick={handleYesPurchase}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Yes
+              </button>
+              <button
+                onClick={handleNoPurchase}
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              >
+                No
+              </button>
             </div>
-            <button onClick={toggleHistory}>
-              {showHistory ? 'Hide History' : 'View History'}
+          </div>
+        )}
+
+        {step === STEPS.ENTER_AMOUNT && (
+          <form onSubmit={handleAmountSubmit}>
+            <h2 className="text-xl mb-4">How much did you spend?</h2>
+            <input
+              type="number"
+              value={purchaseAmount}
+              onChange={(e) => setPurchaseAmount(e.target.value)}
+              className="border p-2 rounded w-full mb-4"
+              placeholder="Enter amount"
+              min="0"
+              step="0.01"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Continue
+            </button>
+          </form>
+        )}
+
+        {step === STEPS.SHOW_DONATION && (
+          <div>
+            <h2 className="text-xl mb-4">
+              Consider donating ${donationAmount.toFixed(2)} (50% of your purchase)
+            </h2>
+            <div className="mb-4">
+              <label className="block mb-2">Select a campaign:</label>
+              <select
+                value={selectedCampaign}
+                onChange={(e) => setSelectedCampaign(e.target.value)}
+                className="border p-2 rounded w-full"
+                required
+              >
+                <option value="">Choose a campaign</option>
+                {CAMPAIGNS.map(campaign => (
+                  <option key={campaign} value={campaign}>
+                    {campaign}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleDonationConfirm}
+              disabled={!selectedCampaign}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+            >
+              I Made My Donation
             </button>
           </div>
+        )}
 
-          {showHistory && (
-            <section className="history">
-              <h2>Spending and Savings History</h2>
-              {spendingHistory.length === 0 ? (
-                <p>No entries recorded yet.</p>
-              ) : (
-                <ul>
-                  {spendingHistory.map((entry, index) => (
-                    <li key={index}>
-                      {new Date(entry.date).toLocaleDateString()}: ${entry.amount.toFixed(2)} ({entry.type})
-                      {entry.savings > 0 && ` - Saved: $${entry.savings.toFixed(2)}`}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          )}
-
-          {step === STEPS.ASK_PURCHASE && (
-            <section className="purchase-question">
-              <h2>What type of purchase did you make?</h2>
-              <button onClick={() => handlePurchaseType(PURCHASE_TYPES.FRIVOLOUS)}>Frivolous</button>
-              <button onClick={() => handlePurchaseType(PURCHASE_TYPES.NON_FRIVOLOUS)}>Non-Frivolous</button>
-            </section>
-          )}
-
-          {step === STEPS.ENTER_AMOUNT && (
-            <section>
-              <h2>How much did you spend?</h2>
-              <input 
-                type="number" 
-                value={purchaseAmount} 
-                onChange={(e) => setPurchaseAmount(e.target.value)}
-                placeholder="Enter amount in $"
-              />
-              <button onClick={handleAmountSubmit}>Submit</button>
-            </section>
-          )}
-
-          {step === STEPS.SHOW_SAVINGS && (
-            <section>
-              <h2>Time to save!</h2>
-              <p>Based on your frivolous purchase of ${purchaseAmount}, you should save at least:</p>
-              <h3>${savingsAmount.toFixed(2)}</h3>
-              <p>This is 10% of your purchase amount.</p>
-              <h3>Did you set aside this savings?</h3>
-              <button onClick={() => handleSavingsConfirm(true)}>Yes</button>
-              <button onClick={() => handleSavingsConfirm(false)}>Not yet</button>
-              {showEncouragement && (
-                <div className="encouragement-message">
-                  <p>Every bit of savings helps! Setting aside this amount now can make a big difference in the long run. Why not take a moment to transfer it to your savings account?</p>
-                </div>
-              )}
-            </section>
-          )}
-
-          {step === STEPS.COMPLETE && (
-            <section>
-              <h2>Great job!</h2>
-              <p>You're on your way to better financial health. 🎉</p>
-              <button onClick={resetProcess}>Record Another Purchase</button>
-            </section>
-          )}
-
-          <section className="manual-entry">
-            <h2>Manual Entry</h2>
-            <select 
-              value={manualEntryType} 
-              onChange={(e) => setManualEntryType(e.target.value)}
+        {step === STEPS.COMPLETE && (
+          <div>
+            <h2 className="text-xl mb-4">Thank you for your donation!</h2>
+            <button
+              onClick={resetStep}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              <option value="">Select Type</option>
-              <option value={PURCHASE_TYPES.FRIVOLOUS}>Frivolous Purchase</option>
-              <option value={PURCHASE_TYPES.NON_FRIVOLOUS}>Non-Frivolous Purchase</option>
-              <option value="Savings">Savings</option>
-            </select>
-            <input 
-              type="number" 
-              value={manualEntryAmount} 
-              onChange={(e) => setManualEntryAmount(e.target.value)}
-              placeholder="Enter amount in $"
-            />
-            <button onClick={handleManualEntry}>Add Entry</button>
-          </section>
-
-          <div className="privacy-disclaimer">
-            <p>Privacy Notice: All data is stored locally on your device. No personal information is sent to or stored on our servers.</p>
-            <button onClick={debouncedClearAllData} className="clear-data-btn">Clear My Data</button>
+              Track Another Purchase
+            </button>
           </div>
-        </main>
+        )}
+
+        {/* Manual Donation Entry */}
+        <div className="mt-8 pt-8 border-t">
+          <h2 className="text-xl mb-4">Add Manual Donation</h2>
+          <form onSubmit={handleManualDonationSubmit} className="space-y-4">
+            <div>
+              <label className="block mb-2">Amount:</label>
+              <input
+                type="number"
+                name="amount"
+                className="border p-2 rounded w-full"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-2">Campaign:</label>
+              <select
+                name="campaign"
+                className="border p-2 rounded w-full"
+                required
+              >
+                <option value="">Choose a campaign</option>
+                {CAMPAIGNS.map(campaign => (
+                  <option key={campaign} value={campaign}>
+                    {campaign}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add Donation
+            </button>
+          </form>
+        </div>
+
+        {/* Donation History */}
+        <div className="mt-8 pt-8 border-t">
+          <h2 className="text-xl mb-4">Donation History</h2>
+          {donationHistory.length > 0 ? (
+            <div className="space-y-2">
+              {donationHistory.map((donation, index) => (
+                <div key={index} className="border p-2 rounded">
+                  <p>Amount: ${donation.amount.toFixed(2)}</p>
+                  <p>Campaign: {donation.campaign}</p>
+                  <p>Date: {new Date(donation.date).toLocaleDateString()}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No donations recorded yet.</p>
+          )}
+        </div>
+
+        {/* Clear Data Button */}
+        <div className="mt-8 pt-8 border-t">
+          <button
+            onClick={clearAllData}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Clear All Data
+          </button>
+        </div>
       </div>
     </div>
   );
